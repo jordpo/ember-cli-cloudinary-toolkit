@@ -6,6 +6,15 @@ module.exports = function(defaults) {
     // Add options here
   });
 
+  app.import('bower_components/jquery-ui/ui/widget.js');
+  app.import('bower_components/cloudinary_js/js/load-image.min.js');
+  app.import('bower_components/cloudinary_js/js/canvas-to-blob.min.js');
+  app.import('bower_components/blueimp-file-upload/js/jquery.iframe-transport.js');
+  app.import('bower_components/blueimp-file-upload/js/jquery.fileupload.js');
+  app.import('bower_components/cloudinary_js/js/jquery.cloudinary.js');
+  app.import('bower_components/blueimp-file-upload/js/jquery.fileupload-process.js');
+  app.import('bower_components/blueimp-file-upload/js/jquery.fileupload-image.js');
+  app.import('bower_components/blueimp-file-upload/js/jquery.fileupload-validate.js');
   /*
     This build file specifes the options for the dummy test app of this
     addon, located in `/tests/dummy`
