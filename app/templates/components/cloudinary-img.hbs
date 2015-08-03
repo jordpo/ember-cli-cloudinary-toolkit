@@ -1,0 +1,5 @@
+{{#if hasImage}}
+  <img class='cloudinary-img-present' {{src=src alt=alt width=width height=height}} />
+{{else}}
+  {{yield}}
+{{/if}}
