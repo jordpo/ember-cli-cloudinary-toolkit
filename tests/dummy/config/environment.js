@@ -20,11 +20,18 @@ module.exports = function(environment) {
   };
 
   if (environment === 'development') {
-    // ENV.APP.LOG_RESOLVER = true;
-    // ENV.APP.LOG_ACTIVE_GENERATION = true;
-    // ENV.APP.LOG_TRANSITIONS = true;
-    // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
-    // ENV.APP.LOG_VIEW_LOOKUPS = true;
+    ENV.APP.cloudinary = {
+      name: '',
+      uploadPreset: '',
+      // global settings for upload behavior
+      imgUploadSettings: {
+        disableImageResize: false,
+        imageMaxWidth: 1000,
+        imageMaxHeight: 1000,
+        acceptFileTypes: '(\.|\/)(gif|pdf|jpe?g|png|bmp|ico)$',
+        maxFileSize: 20000000, // 20MB
+      }
+    };
   }
 
   if (environment === 'test') {

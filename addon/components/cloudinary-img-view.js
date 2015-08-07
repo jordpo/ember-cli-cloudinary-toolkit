@@ -8,10 +8,12 @@ export default Ember.Component.extend({
   classNames:['CloudinaryImgView'],
   classNameBindings:['hasImage'],
   cloudinaryId: null,
+  alt: null,
+
   height: null,
   width: null,
-  alt: null,
   crop: 'fill',
+  format: null, // defaults to jpg
 
   hasImage: notEmpty('cloudinaryId'),
 

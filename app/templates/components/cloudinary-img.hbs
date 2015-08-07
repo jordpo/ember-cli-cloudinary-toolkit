@@ -1,5 +1,11 @@
-{{#if hasImage}}
-  <img class='cloudinary-img-present' src="{{src}}" width="{{width}}" height="{{height}}"/>
-{{else}}
-  {{yield}}
+{{#if isUploading}}
+  {{cloudinary-img-upload cloudinaryId=cloudinaryId}}
+{{/if}}
+
+{{#if isCropping}}
+  {{cloudinary-img-crop cloudinaryId=cloudinaryId}}
+{{/if}}
+
+{{#if isViewing}}
+  {{cloudinary-img-view cloudinaryId=cloudinaryId}}
 {{/if}}
