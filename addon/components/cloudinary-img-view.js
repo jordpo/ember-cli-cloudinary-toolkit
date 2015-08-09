@@ -14,10 +14,10 @@ export default Ember.Component.extend({
   width: null,
   format: null, // defaults to jpg
 
-  cloudinaryCropData: null,
+  cropData: null,
 
-  crop: Ember.computed('cloudinaryCropData', function() {
-    return get(this, 'cloudinaryCropData') ? 'crop' : 'fill';
+  crop: Ember.computed('cropData', function() {
+    return get(this, 'cropData') ? 'crop' : 'fill';
   }),
 
   hasImage: notEmpty('cloudinaryId'),
@@ -34,14 +34,16 @@ export default Ember.Component.extend({
     }, {});
   }),
 
-  src: computed('cloudinaryId', 'imageAttrs', 'cloudinaryCropData', function() {
+  src: computed('cloudinaryId', 'imageAttrs', 'cropData', function() {
     const cloudinaryId = get(this, 'cloudinaryId');
     const imageAttrs = get(this, 'imageAttrs');
-    const cloudinaryCropData = get(this, 'cloudinaryCropData');
+    const cropData = get(this, 'cropData');
 
     if (get(this, 'hasImage')) {
-      if (cloudinaryCropData) {
-        merge(imageAttrs, JSON.parse(cloudinaryCropData));
+
+      // add cropData if present
+      if (cropData) {
+        merge(imageAttrs, cropData);
       }
 
       return cloudinary.url(cloudinaryId, imageAttrs);

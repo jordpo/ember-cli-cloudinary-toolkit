@@ -1,38 +1,90 @@
 import Ember from 'ember';
 
-const { get, set, merge } = Ember;
+const { get, set, merge, run } = Ember;
+const { debounce } = run;
 
-function normalize(data) {
-  data.x = data.x.toFixed();
-  data.y = data.y.toFixed();
-  data.width = data.width.toFixed();
-  data.height = data.height.toFixed();
+function normalizeData(data) {
+  // cloudinary uses angle instead of rotate as key name
   data.angle = data.rotate;
   delete data.rotate;
-  return data;
+
+  // check if all crucial values are 0 indicating a clear trigger
+  const isClear = ['width', 'height', 'x', 'y'].every((k) => {
+    return data[k] === 0;
+  });
+
+  return isClear ? null : data;
 }
 
 export default Ember.Component.extend({
   classNames: ['CloudinaryImgCrop'],
-  cloudinaryId: null,
-  cloudinaryCropData: null,
 
-  // pass this in to customize config
-  customConfig: {},
+  // public
+  cloudinaryId: null,
+  cropData: null,
+  config: {},
+  autoSave: true,
+
+  // private
+  $img: null,
+
+  cropperMethods: [
+    Ember.A(['Drag move', 'setDragMode', 'move']),
+    Ember.A(['Drag crop', 'setDragMode', 'crop']),
+    Ember.A(['Zoom in', 'zoom', 0.1]),
+    Ember.A(['Zoom out', 'zoom', -0.1]),
+    Ember.A(['Rotate left', 'rotate', -45]),
+    Ember.A(['Rotate right', 'rotate', 45]),
+    Ember.A(['Crop', 'crop']),
+    Ember.A(['Clear', 'clear']),
+    Ember.A(['Disable', 'disable']),
+    Ember.A(['Enable', 'enable']),
+    Ember.A(['Reset', 'reset'])
+  ],
 
   initializeCrop: Ember.on('didInsertElement', function() {
-    const img = this.$('img');
-    const customConfig = get(this, 'customConfig');
-    const config = {
-      aspectRatio: 1,
-      zoomable: false,
-      crop: (data) => {
-        data = JSON.stringify(normalize(data));
-        set(this, 'cloudinaryCropData', data);
-      }
-    };
+    const $img = this.$('img');
+    const config = get(this, 'config');
 
-    merge(config, customConfig);
-    return img.cropper(config);
-  })
+    set(this, '$img', $img);
+
+    merge(config, {
+      crop: () => {
+        if (get(this, 'autoSave')) {
+          debounce(this, this.finalizeCrop, 500);
+        }
+      }
+    });
+
+    return $img.cropper(config);
+  }),
+
+  finalizeCrop() {
+    const $img = get(this, '$img');
+    let cropData = $img.cropper('getData', true);
+
+    cropData = normalizeData(cropData);
+
+    run(() => {
+      set(this, 'cropData', cropData);
+    });
+
+    if (get(this, 'afterCrop')) {
+      this.sendAction('afterCrop');
+    }
+  },
+
+  actions: {
+    save() {
+      this.finalizeCrop();
+    },
+
+    triggerCropperMethod(cropperMethod) {
+      const $img = get(this, '$img');
+      const method = cropperMethod[1];
+      const arg = cropperMethod[2];
+
+      $img.cropper(method, arg);
+    }
+  }
 });

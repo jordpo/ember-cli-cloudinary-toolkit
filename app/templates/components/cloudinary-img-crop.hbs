@@ -1,3 +1,11 @@
 {{yield}}
 
-{{cloudinary-img-view cloudinaryId=cloudinaryId cloudinaryCropData=cloudinaryCropData}}
+{{cloudinary-img-view cloudinaryId=cloudinaryId}}
+
+{{#unless autoSave}}
+  <button {{action 'save'}} class='CloudinaryImgCrop-saveButton'>Save</button>
+{{/unless}}
+
+{{#each cropperMethods as |cropperMethod| }}
+  <button {{action 'triggerCropperMethod' cropperMethod}} class='CloudinaryImgCrop-methodButton'>{{cropperMethod.firstObject}}</button>
+{{/each}}
