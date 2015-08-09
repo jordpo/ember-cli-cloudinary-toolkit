@@ -12,27 +12,39 @@ export default Ember.Component.extend({
 
   height: null,
   width: null,
-  crop: 'fill',
   format: null, // defaults to jpg
+
+  cloudinaryCropData: null,
+
+  crop: Ember.computed('cloudinaryCropData', function() {
+    return get(this, 'cloudinaryCropData') ? 'crop' : 'fill';
+  }),
 
   hasImage: notEmpty('cloudinaryId'),
 
   imageAttrs: Ember.computed('height', 'width', 'crop', 'format', function() {
-    const imageAttrs = {};
     const attrs = ['height', 'width', 'crop', 'format'];
 
-    attrs.forEach((attr) => {
+    return attrs.reduce((imageAttrs, attr) => {
       if (get(this, attr)) {
-        merge(imageAttrs, get(this, attr));
+        imageAttrs[attr] = get(this, attr);
       }
-    });
 
-    return imageAttrs;
+      return imageAttrs;
+    }, {});
   }),
 
-  src: computed('cloudinaryId', function() {
+  src: computed('cloudinaryId', 'imageAttrs', 'cloudinaryCropData', function() {
+    const cloudinaryId = get(this, 'cloudinaryId');
+    const imageAttrs = get(this, 'imageAttrs');
+    const cloudinaryCropData = get(this, 'cloudinaryCropData');
+
     if (get(this, 'hasImage')) {
-      return cloudinary.url(get(this, 'cloudinaryId'), get(this, 'imageAttrs'));
+      if (cloudinaryCropData) {
+        merge(imageAttrs, JSON.parse(cloudinaryCropData));
+      }
+
+      return cloudinary.url(cloudinaryId, imageAttrs);
     }
   })
 });
