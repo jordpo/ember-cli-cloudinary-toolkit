@@ -28,7 +28,7 @@ export default Ember.Component.extend({
   // private
   $img: null,
 
-  cropperMethods: [
+  _cropperMethods: [
     Ember.A(['Drag move', 'setDragMode', 'move']),
     Ember.A(['Drag crop', 'setDragMode', 'crop']),
     Ember.A(['Zoom in', 'zoom', 0.1]),
@@ -41,6 +41,12 @@ export default Ember.Component.extend({
     Ember.A(['Enable', 'enable']),
     Ember.A(['Reset', 'reset'])
   ],
+
+  cropperMethods: Ember.computed('_cropperMethods', function() {
+    return get(this, '_cropperMethods').filter((item) => {
+      return !!get(this, item[1]);
+    });
+  }),
 
   initializeCrop: Ember.on('didInsertElement', function() {
     const $img = this.$('img');
