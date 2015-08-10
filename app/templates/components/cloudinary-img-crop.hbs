@@ -1,6 +1,12 @@
 {{yield}}
 
-{{cloudinary-img-view cloudinaryId=cloudinaryId}}
+{{#if cropperPreview}}
+  <div class='CloudinaryImgCrop-preview'></div>
+{{/if}}
+
+<div class='CloudinaryImgCrop-img'>
+  <img src={{cloudinaryUrl}} alt="cropping image" />
+</div>
 
 {{#unless autoSave}}
   <button {{action 'save'}} class='CloudinaryImgCrop-saveButton'>Save</button>

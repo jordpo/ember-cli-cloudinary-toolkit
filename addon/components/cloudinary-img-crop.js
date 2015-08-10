@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 const { get, set, merge, run } = Ember;
 const { debounce } = run;
+const cloudinary = Ember.$.cloudinary;
 
 function normalizeData(data) {
   // cloudinary uses angle instead of rotate as key name
@@ -24,6 +25,8 @@ export default Ember.Component.extend({
   cropData: null,
   config: {},
   autoSave: true,
+  cropperPreview: false,
+  format: 'jpg',
 
   // private
   $img: null,
@@ -48,13 +51,32 @@ export default Ember.Component.extend({
     });
   }),
 
-  initializeCrop: Ember.on('didInsertElement', function() {
-    const $img = this.$('img');
+  cloudinaryUrl: Ember.computed('cloudinaryId', function() {
+    const cloudinaryId = get(this, 'cloudinaryId');
+    const $img = get(this, '$img');
+    const format = get(this, 'format');
+
+
+    if (cloudinaryId) {
+      const cloudinaryUrl = cloudinary.url(cloudinaryId, {format: format});
+
+      // ensure the img cropper has the correct image url
+      if ($img) {
+        $img.cropper('replace', cloudinaryUrl);
+      }
+
+      return cloudinaryUrl;
+    }
+  }),
+
+  initializeCropper: Ember.on('didInsertElement', function() {
+    const $img = this.$('.CloudinaryImgCrop-img > img');
     const config = get(this, 'config');
 
     set(this, '$img', $img);
 
     merge(config, {
+      preview: '.CloudinaryImgCrop-preview',
       crop: () => {
         if (get(this, 'autoSave')) {
           debounce(this, this.finalizeCrop, 500);

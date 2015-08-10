@@ -12,7 +12,7 @@ export default Ember.Component.extend({
 
   height: null,
   width: null,
-  format: null, // defaults to jpg
+  format: 'jpg',
 
   cropData: null,
 
